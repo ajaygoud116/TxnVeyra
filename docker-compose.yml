@@ -1,0 +1,21 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: txnveyra-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-txnveyra}
+      POSTGRES_USER: ${POSTGRES_USER:-txnveyra}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in the root .env file}
+    ports:
+      - "5432:5432"
+    volumes:
+      - txnveyra_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-txnveyra} -d ${POSTGRES_DB:-txnveyra}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  txnveyra_postgres_data:
